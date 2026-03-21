@@ -36,37 +36,8 @@ const CheckoutPage = () => {
 
             const { data } = await API.post('/orders', { products, totalAmount: total, shippingAddress: address });
             
-            const options = {
-                key: 'your_razorpay_key_id', // This should be from .env but for frontend it's hardcoded for simplicity in this example
-                amount: data.razorpayOrder.amount,
-                currency: data.razorpayOrder.currency,
-                name: 'craftco.lab',
-                description: 'Purchase Payment',
-                order_id: data.razorpayOrder.id,
-                handler: async (response: any) => {
-                    try {
-                        await API.post('/orders/verify', {
-                            razorpayOrderId: response.razorpay_order_id,
-                            razorpayPaymentId: response.razorpay_payment_id,
-                            razorpaySignature: response.razorpay_signature
-                        });
-                        alert('Order placed successfully!');
-                        navigate('/orders');
-                    } catch (err) {
-                        alert('Payment verification failed');
-                    }
-                },
-                prefill: {
-                    name: JSON.parse(localStorage.getItem('userInfo')!).name,
-                    email: JSON.parse(localStorage.getItem('userInfo')!).email
-                },
-                theme: {
-                    color: '#D85C63'
-                }
-            };
-
-            const rzp = new (window as any).Razorpay(options);
-            rzp.open();
+            alert('Order placed successfully!');
+            navigate('/orders');
         } catch (err: any) {
             alert(err.response?.data?.message || 'Checkout failed');
         } finally {
