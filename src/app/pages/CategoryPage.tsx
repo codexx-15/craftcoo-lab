@@ -2,14 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import API from '../api';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { Heart, ShoppingBag } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { toast } from 'sonner';
 
 import PageWrapper from '../components/PageWrapper';
 
 const CategoryPage = () => {
     const { category } = useParams();
+    const { updateCartCount } = useCart();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [wishlist, setWishlist] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -25,6 +30,33 @@ const CategoryPage = () => {
         };
         fetchProducts();
     }, [category]);
+
+    const toggleWishlist = (e: React.MouseEvent, productId: string) => {
+        e.preventDefault();
+        setWishlist(prev => 
+            prev.includes(productId) 
+                ? prev.filter(id => id !== productId) 
+                : [...prev, productId]
+        );
+        const isAdded = !wishlist.includes(productId);
+        toast(isAdded ? 'Added to wishlist' : 'Removed from wishlist', {
+            icon: <Heart className={`w-4 h-4 ${isAdded ? 'fill-[#D85C63] text-[#D85C63]' : ''}`} />,
+        });
+    };
+
+    const addToCart = async (e: React.MouseEvent, product: any) => {
+        e.preventDefault();
+        try {
+            await API.post('/cart', { productId: product._id, quantity: 1 });
+            await updateCartCount();
+            toast.success(`${product.name} added to cart!`, {
+                description: 'Check your cart to checkout.',
+                position: 'bottom-right',
+            });
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Failed to add to cart');
+        }
+    };
 
     if (loading) return <div className="text-center py-20">Loading products...</div>;
     if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
@@ -58,15 +90,29 @@ const CategoryPage = () => {
                                     <h3 className="text-xl mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
                                         {product.name}
                                     </h3>
-                                    <p className="text-2xl text-[#D85C63] mb-5">
+                                    <p className="text-2xl text-[#D85C63] mb-5 font-semibold">
                                         ₹{product.price}
                                     </p>
                                     
-                                    <button 
-                                        className="w-full bg-[#D85C63] text-white py-3 px-6 rounded-full transition-all duration-300 hover:bg-[#d1535a] shadow-[0_8px_18px_rgba(216,92,99,0.35)]"
-                                    >
-                                        View Details
-                                    </button>
+                                    <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={(e) => toggleWishlist(e, product._id)}
+                                            className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-100 bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group/wish"
+                                            aria-label="Add to wishlist"
+                                        >
+                                            <Heart 
+                                                className={`w-5 h-5 transition-colors duration-300 ${wishlist.includes(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
+                                            />
+                                        </button>
+
+                                        <button 
+                                            onClick={(e) => addToCart(e, product)}
+                                            className="flex-1 flex items-center justify-center gap-2 bg-[#D85C63] text-white py-3 px-4 rounded-2xl font-semibold hover:bg-[#d1535a] hover:scale-[1.02] transition-all duration-300 shadow-[0_8px_18px_rgba(216,92,99,0.25)] hover:shadow-[0_10px_22px_rgba(216,92,99,0.35)]"
+                                        >
+                                            <ShoppingBag className="w-5 h-5" />
+                                            <span>Add to Cart</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </Link>
                         ))}

@@ -4,12 +4,14 @@ import API from '../api';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useCart } from '../context/CartContext';
 import { toast } from 'sonner';
+import { Heart, ShoppingBag } from 'lucide-react';
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<any[]>([]);
   const { updateCartCount } = useCart();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [wishlist, setWishlist] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,6 +27,18 @@ export function FeaturedProducts() {
     };
     fetchProducts();
   }, []);
+
+  const toggleWishlist = (productId: string) => {
+    setWishlist(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId) 
+        : [...prev, productId]
+    );
+    const isAdded = !wishlist.includes(productId);
+    toast(isAdded ? 'Added to wishlist' : 'Removed from wishlist', {
+      icon: <Heart className={`w-4 h-4 ${isAdded ? 'fill-[#D85C63] text-[#D85C63]' : ''}`} />,
+    });
+  };
 
   if (loading) return <div className="text-center py-12">Loading products...</div>;
   if (error) return <div className="text-center py-12 text-red-500">{error}</div>;
@@ -58,11 +72,21 @@ export function FeaturedProducts() {
                     {product.name}
                   </h3>
                 </Link>
-                <p className="text-2xl text-[#D85C63] mb-5">
+                <p className="text-2xl text-[#D85C63] mb-5 font-semibold">
                   ₹{product.price}
                 </p>
                 
-                <div className="relative">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => toggleWishlist(product._id)}
+                    className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-100 bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group/wish"
+                    aria-label="Add to wishlist"
+                  >
+                    <Heart 
+                      className={`w-5 h-5 transition-colors duration-300 ${wishlist.includes(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
+                    />
+                  </button>
+
                   <button 
                     onClick={async () => {
                       try {
@@ -76,11 +100,11 @@ export function FeaturedProducts() {
                         toast.error(err.response?.data?.message || 'Failed to add to cart');
                       }
                     }}
-                    className="w-full bg-[#D85C63] text-white py-3 px-6 rounded-full transition-all duration-300 hover:bg-[#d1535a] shadow-[0_8px_18px_rgba(216,92,99,0.35)]"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#D85C63] text-white py-3 px-4 rounded-2xl font-semibold hover:bg-[#d1535a] hover:scale-[1.02] transition-all duration-300 shadow-[0_8px_18px_rgba(216,92,99,0.25)] hover:shadow-[0_10px_22px_rgba(216,92,99,0.35)]"
                   >
-                    Add to Cart
+                    <ShoppingBag className="w-5 h-5" />
+                    <span>Add to Cart</span>
                   </button>
-                  <div className="pointer-events-none absolute left-3 right-3 top-1 h-2 rounded-full bg-white/40 blur-[2px]" />
                 </div>
               </div>
             </div>
