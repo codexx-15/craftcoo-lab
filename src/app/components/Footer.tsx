@@ -1,8 +1,10 @@
+import { Link } from "react-router";
+
 export function Footer() {
     return (
       <footer className="bg-[#D85C63] text-white py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-4 gap-12 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             {/* About */}
             <div>
               <h3 className="text-xl mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -20,22 +22,22 @@ export function Footer() {
               </h3>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <a href="#" className="text-white/90 hover:text-white transition-colors duration-300">
+                  <Link to="/category/paintings" className="text-white/90 hover:text-white transition-colors duration-300">
                     Categories
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-white/90 hover:text-white transition-colors duration-300">
-                    Hot Deals
-                  </a>
+                  <Link to="/store" className="text-white/90 hover:text-white transition-colors duration-300">
+                    Store
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-white/90 hover:text-white transition-colors duration-300">
+                  <Link to="/orders" className="text-white/90 hover:text-white transition-colors duration-300">
                     Track Order
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-white/90 hover:text-white transition-colors duration-300">
+                  <a href="mailto:craftcoo.lab@gmail.com" className="text-white/90 hover:text-white transition-colors duration-300">
                     Contact Us
                   </a>
                 </li>

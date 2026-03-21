@@ -28,8 +28,8 @@ export function FAQSection() {
   const [openId, setOpenId] = useState<number | null>(null);
   
   return (
-    <section className="max-w-4xl mx-auto px-6 py-20">
-      <h2 className="text-4xl text-center mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>
+    <section className="max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20">
+      <h2 className="text-3xl md:text-4xl text-center mb-8 md:mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>
         Frequently Asked Questions
       </h2>
       
@@ -37,7 +37,7 @@ export function FAQSection() {
         {faqs.map((faq) => (
           <div 
             key={faq.id}
-            className="bg-[#E6A8A8]/20 rounded-2xl border-2 border-[#D85C63]/30 overflow-hidden transition-all duration-300 hover:shadow-lg"
+            className="bg-[#E6A8A8]/20 rounded-2xl border border-[#D85C63]/25 overflow-hidden transition-all duration-300 hover:shadow-lg"
           >
             <button
               onClick={() => setOpenId(openId === faq.id ? null : faq.id)}

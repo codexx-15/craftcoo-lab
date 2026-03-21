@@ -1,45 +1,42 @@
+import { Link } from 'react-router';
+import { useState, useEffect } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-
-const paintingsImage = '/images/paintings.png';
-const customPaintingsImage = '/images/custom-paintings.png';
-const postcardsImage = '/images/postcards.png';
-const bookmarksImage = '/images/bookmarks.png';
-
-const categories = [
-  {
-    id: 1,
-    title: 'Paintings',
-    image: paintingsImage
-  },
-  {
-    id: 2,
-    title: 'Custom Paintings',
-    image: customPaintingsImage
-  },
-  {
-    id: 3,
-    title: 'Bookmarks',
-    image: bookmarksImage
-  },
-  {
-    id: 4,
-    title: 'Postcards',
-    image: postcardsImage
-  }
-];
+import API from '../api';
 
 export function CategoryGrid() {
+  const [collections, setCollections] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await API.get('/settings');
+        setCollections(data.collections);
+      } catch (err) {
+        console.error('Failed to fetch collections:', err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const displayCollections = collections.length > 0 ? collections : [
+    { id: 1, title: 'Paintings', image: '/images/paintings.png', slug: 'paintings' },
+    { id: 2, title: 'Custom Paintings', image: '/images/custom-paintings.png', slug: 'custom-paintings' },
+    { id: 3, title: 'Bookmarks', image: '/images/bookmarks.png', slug: 'bookmarks' },
+    { id: 4, title: 'Postcards', image: '/images/postcards.png', slug: 'postcards' }
+  ];
+
   return (
-    <section className="max-w-7xl mx-auto px-6 py-16">
-      <h2 className="text-4xl text-center mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>
+    <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
+      <h2 className="text-3xl md:text-4xl text-center mb-8 md:mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>
         Explore Our Collections
       </h2>
       
-      <div className="grid grid-cols-4 gap-6">
-        {categories.map((category) => (
-          <div 
-            key={category.id}
-            className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-500"
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        {displayCollections.map((category, idx) => (
+          <Link 
+            to={`/category/${category.slug}`}
+            key={category._id || idx}
+            className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-lg transition-all duration-500"
           >
             <div className="aspect-[3/4] relative">
               <ImageWithFallback
@@ -58,7 +55,7 @@ export function CategoryGrid() {
                 </h3>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
