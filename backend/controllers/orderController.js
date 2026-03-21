@@ -2,15 +2,23 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Razorpay = require('razorpay');
 
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+let razorpay;
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+} else {
+    console.warn('RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing. Payments will not work.');
+}
 
 // Create order
 exports.createOrder = async (req, res) => {
     const { products, totalAmount, shippingAddress } = req.body;
     try {
+        if (!razorpay) {
+            return res.status(400).json({ message: 'Payment gateway is not configured yet. Please try again later.' });
+        }
         const order = await Order.create({
             user: req.user._id,
             products,
