@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import API from '../api';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { useCart } from '../context/CartContext';
+import { toast } from 'sonner';
 
 import PageWrapper from '../components/PageWrapper';
 
 const ProductPage = () => {
     const { id } = useParams();
+    const { updateCartCount } = useCart();
     const [product, setProduct] = useState<any>(null);
     const [activeImage, setActiveImage] = useState<string>('');
     const [loading, setLoading] = useState(true);
@@ -33,9 +36,13 @@ const ProductPage = () => {
         try {
             setAddingToCart(true);
             await API.post('/cart', { productId: id, quantity: 1 });
-            alert('Added to cart!');
+            await updateCartCount();
+            toast.success(`${product.name} added to cart!`, {
+                description: 'Check your cart to checkout.',
+                position: 'bottom-right',
+            });
         } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to add to cart');
+            toast.error(err.response?.data?.message || 'Failed to add to cart');
         } finally {
             setAddingToCart(false);
         }

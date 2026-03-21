@@ -2,9 +2,11 @@ import { Search, User, Heart, ShoppingCart, Menu, LogOut, X } from 'lucide-react
 import { Link, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import API from '../api';
+import { useCart } from '../context/CartContext';
 
 export function Header() {
   const navigate = useNavigate();
+  const { cartCount } = useCart();
   const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null;
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -125,8 +127,13 @@ export function Header() {
             >
               <Search className="w-5 h-5" />
             </button>
-            <Link to="/cart" className="hover:text-[#D85C63] transition-colors" aria-label="Cart">
+            <Link to="/cart" className="hover:text-[#D85C63] transition-colors relative" aria-label="Cart">
               <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#D85C63] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-in zoom-in duration-300">
+                  {cartCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>
@@ -194,8 +201,13 @@ export function Header() {
             <button className="hover:text-[#D85C63] transition-colors duration-300" aria-label="Wishlist">
               <Heart className="w-5 h-5" />
             </button>
-            <Link to="/cart" className="hover:text-[#D85C63] transition-colors duration-300" aria-label="Cart">
+            <Link to="/cart" className="hover:text-[#D85C63] transition-colors duration-300 relative" aria-label="Cart">
               <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2.5 -right-2.5 bg-[#D85C63] text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in duration-300">
+                  {cartCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>

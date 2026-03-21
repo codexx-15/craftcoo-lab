@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import API from '../api';
 import { Trash2, Plus, Minus } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { toast } from 'sonner';
 
 import PageWrapper from '../components/PageWrapper';
 
 const CartPage = () => {
     const [cart, setCart] = useState<any>(null);
+    const { updateCartCount } = useCart();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -36,8 +39,9 @@ const CartPage = () => {
         try {
             const { data } = await API.put('/cart', { productId, quantity });
             setCart(data);
+            await updateCartCount();
         } catch (err) {
-            alert('Failed to update quantity');
+            toast.error('Failed to update quantity');
         }
     };
 
@@ -45,8 +49,10 @@ const CartPage = () => {
         try {
             const { data } = await API.delete(`/cart/${productId}`);
             setCart(data);
+            await updateCartCount();
+            toast.success('Item removed from cart');
         } catch (err) {
-            alert('Failed to remove item');
+            toast.error('Failed to remove item');
         }
     };
 

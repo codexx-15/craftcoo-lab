@@ -16,6 +16,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import AdminPage from "./pages/AdminPage";
 
+import { CartProvider } from "./context/CartContext";
+
 const ProtectedRoute = ({ children, isAdmin = false }: { children: React.ReactNode, isAdmin?: boolean }) => {
   const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null;
   if (!userInfo) return <Navigate to="/login" />;
@@ -26,7 +28,8 @@ const ProtectedRoute = ({ children, isAdmin = false }: { children: React.ReactNo
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#fdfbfb] relative overflow-hidden">
+      <CartProvider>
+        <div className="min-h-screen bg-[#fdfbfb] relative overflow-hidden">
         
         {/* Grain texture overlay */}
         <div
@@ -61,6 +64,7 @@ function App() {
         </div>
 
       </div>
+      </CartProvider>
     </Router>
   );
 }

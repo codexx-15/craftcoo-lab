@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import API from '../api';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { useCart } from '../context/CartContext';
+import { toast } from 'sonner';
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<any[]>([]);
+  const { updateCartCount } = useCart();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,9 +67,13 @@ export function FeaturedProducts() {
                     onClick={async () => {
                       try {
                         await API.post('/cart', { productId: product._id, quantity: 1 });
-                        alert('Added to cart!');
+                        await updateCartCount();
+                        toast.success(`${product.name} added to cart!`, {
+                          description: 'Check your cart to checkout.',
+                          position: 'bottom-right',
+                        });
                       } catch (err: any) {
-                        alert(err.response?.data?.message || 'Failed to add to cart');
+                        toast.error(err.response?.data?.message || 'Failed to add to cart');
                       }
                     }}
                     className="w-full bg-[#D85C63] text-white py-3 px-6 rounded-full transition-all duration-300 hover:bg-[#d1535a] shadow-[0_8px_18px_rgba(216,92,99,0.35)]"
