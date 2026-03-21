@@ -24,19 +24,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the frontend dist folder in production
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../dist')));
-    app.get('*', (req, res) => 
-        res.sendFile(path.resolve(__dirname, '../', 'dist', 'index.html'))
-    );
-} else {
-    // Basic route
-    app.get('/', (req, res) => {
-        res.send('API is running...');
-    });
-}
-
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
@@ -44,6 +31,22 @@ app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
+
+// Serve static files from the frontend dist folder in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../dist')));
+    app.get('*', (req, res) => {
+        if (req.originalUrl.startsWith('/api')) {
+            return res.status(404).json({ message: 'API endpoint not found' });
+        }
+        res.sendFile(path.resolve(__dirname, '../', 'dist', 'index.html'));
+    });
+} else {
+    // Basic route
+    app.get('/', (req, res) => {
+        res.send('API is running...');
+    });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

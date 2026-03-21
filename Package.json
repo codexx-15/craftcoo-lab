@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "vite preview"
+    "start": "node backend/index.js",
+    "build-all": "npm install && cd backend && npm install && cd .. && npm run build",
+    "server": "cd backend && npm install && node index.js",
+    "install-all": "npm install && cd backend && npm install"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
