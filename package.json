@@ -6,9 +6,9 @@
     "dev": "vite",
     "build": "vite build",
     "start": "node backend/index.js",
-    "build-all": "npm install && cd backend && npm install && cd .. && npm run build",
-    "server": "cd backend && npm install && node index.js",
-    "install-all": "npm install && cd backend && npm install"
+    "build-all": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps && cd .. && npm run build",
+    "server": "cd backend && npm install --legacy-peer-deps && node index.js",
+    "install-all": "npm install --legacy-peer-deps && cd backend && npm install --legacy-peer-deps"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
