@@ -3,15 +3,16 @@ import { Link } from 'react-router';
 import API from '../api';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { toast } from 'sonner';
 import { Heart, ShoppingBag } from 'lucide-react';
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<any[]>([]);
   const { updateCartCount } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [wishlist, setWishlist] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -28,16 +29,24 @@ export function FeaturedProducts() {
     fetchProducts();
   }, []);
 
-  const toggleWishlist = (productId: string) => {
-    setWishlist(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId) 
-        : [...prev, productId]
-    );
-    const isAdded = !wishlist.includes(productId);
-    toast(isAdded ? 'Added to wishlist' : 'Removed from wishlist', {
-      icon: <Heart className={`w-4 h-4 ${isAdded ? 'fill-[#D85C63] text-[#D85C63]' : ''}`} />,
-    });
+  const handleWishlistToggle = (product: any) => {
+    if (isInWishlist(product._id)) {
+      removeFromWishlist(product._id);
+      toast('Removed from wishlist', {
+        icon: <Heart className="w-4 h-4" />,
+      });
+    } else {
+      addToWishlist({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category
+      });
+      toast.success('Added to wishlist', {
+        icon: <Heart className="w-4 h-4 fill-[#D85C63] text-[#D85C63]" />,
+      });
+    }
   };
 
   if (loading) return <div className="text-center py-12">Loading products...</div>;
@@ -78,12 +87,12 @@ export function FeaturedProducts() {
                 
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => toggleWishlist(product._id)}
+                    onClick={() => handleWishlistToggle(product)}
                     className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-100 bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group/wish"
                     aria-label="Add to wishlist"
                   >
                     <Heart 
-                      className={`w-5 h-5 transition-colors duration-300 ${wishlist.includes(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
+                      className={`w-5 h-5 transition-colors duration-300 ${isInWishlist(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
                     />
                   </button>
 

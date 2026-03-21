@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import API from '../api';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export function Header() {
   const navigate = useNavigate();
   const { cartCount } = useCart();
+  const { wishlist } = useWishlist();
   const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null;
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -198,8 +200,17 @@ export function Header() {
               </Link>
             )}
 
-            <button className="hover:text-[#D85C63] transition-colors duration-300" aria-label="Wishlist">
+            <button 
+              onClick={() => navigate('/wishlist')}
+              className="hover:text-[#D85C63] transition-colors duration-300 relative" 
+              aria-label="Wishlist"
+            >
               <Heart className="w-5 h-5" />
+              {wishlist.length > 0 && (
+                <span className="absolute -top-2.5 -right-2.5 bg-[#D85C63] text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in duration-300">
+                  {wishlist.length}
+                </span>
+              )}
             </button>
             <Link to="/cart" className="hover:text-[#D85C63] transition-colors duration-300 relative" aria-label="Cart">
               <ShoppingCart className="w-5 h-5" />

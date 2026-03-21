@@ -4,6 +4,7 @@ import API from '../api';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { toast } from 'sonner';
 
 import PageWrapper from '../components/PageWrapper';
@@ -11,10 +12,10 @@ import PageWrapper from '../components/PageWrapper';
 const CategoryPage = () => {
     const { category } = useParams();
     const { updateCartCount } = useCart();
+    const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [wishlist, setWishlist] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -31,17 +32,25 @@ const CategoryPage = () => {
         fetchProducts();
     }, [category]);
 
-    const toggleWishlist = (e: React.MouseEvent, productId: string) => {
+    const handleWishlistToggle = (e: React.MouseEvent, product: any) => {
         e.preventDefault();
-        setWishlist(prev => 
-            prev.includes(productId) 
-                ? prev.filter(id => id !== productId) 
-                : [...prev, productId]
-        );
-        const isAdded = !wishlist.includes(productId);
-        toast(isAdded ? 'Added to wishlist' : 'Removed from wishlist', {
-            icon: <Heart className={`w-4 h-4 ${isAdded ? 'fill-[#D85C63] text-[#D85C63]' : ''}`} />,
-        });
+        if (isInWishlist(product._id)) {
+            removeFromWishlist(product._id);
+            toast('Removed from wishlist', {
+                icon: <Heart className="w-4 h-4" />,
+            });
+        } else {
+            addToWishlist({
+                _id: product._id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                category: product.category
+            });
+            toast.success('Added to wishlist', {
+                icon: <Heart className="w-4 h-4 fill-[#D85C63] text-[#D85C63]" />,
+            });
+        }
     };
 
     const addToCart = async (e: React.MouseEvent, product: any) => {
@@ -96,12 +105,12 @@ const CategoryPage = () => {
                                     
                                     <div className="flex items-center gap-3">
                                         <button 
-                                            onClick={(e) => toggleWishlist(e, product._id)}
+                                            onClick={(e) => handleWishlistToggle(e, product)}
                                             className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-100 bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group/wish"
                                             aria-label="Add to wishlist"
                                         >
                                             <Heart 
-                                                className={`w-5 h-5 transition-colors duration-300 ${wishlist.includes(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
+                                                className={`w-5 h-5 transition-colors duration-300 ${isInWishlist(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
                                             />
                                         </button>
 

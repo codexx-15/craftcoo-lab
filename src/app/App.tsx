@@ -15,8 +15,10 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import AdminPage from "./pages/AdminPage";
+import WishlistPage from "./pages/WishlistPage";
 
 import { CartProvider } from "./context/CartContext";
+import { WishlistProvider } from "./context/WishlistContext";
 
 const ProtectedRoute = ({ children, isAdmin = false }: { children: React.ReactNode, isAdmin?: boolean }) => {
   const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null;
@@ -28,8 +30,9 @@ const ProtectedRoute = ({ children, isAdmin = false }: { children: React.ReactNo
 function App() {
   return (
     <Router>
-      <CartProvider>
-        <div className="min-h-screen bg-[#fdfbfb] relative overflow-hidden">
+      <WishlistProvider>
+        <CartProvider>
+          <div className="min-h-screen bg-[#fdfbfb] relative overflow-hidden">
         
         {/* Grain texture overlay */}
         <div
@@ -54,17 +57,17 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+            <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute isAdmin={true}><AdminPage /></ProtectedRoute>} />
           </Routes>
 
           <Footer />
-
         </div>
-
       </div>
-      </CartProvider>
+        </CartProvider>
+      </WishlistProvider>
     </Router>
   );
 }
