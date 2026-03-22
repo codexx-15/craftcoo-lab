@@ -11,6 +11,7 @@ const AdminPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [view, setView] = useState<'orders' | 'products' | 'site'>('orders');
+    const [orderCategoryFilter, setOrderCategoryFilter] = useState('All');
 
     // Product Form State
     const [name, setName] = useState('');
@@ -187,6 +188,14 @@ const AdminPage = () => {
     if (loading) return <div className="text-center py-20">Loading admin panel...</div>;
     if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
 
+    const filteredOrders = orders.filter(order => {
+        if (orderCategoryFilter === 'All') return true;
+        if (orderCategoryFilter === 'Custom') return order.products.some((p: any) => p.isCustom);
+        return order.products.some((p: any) => !p.isCustom && p.product?.category === orderCategoryFilter);
+    });
+
+    const categoriesList = ['All', 'Custom', ...Array.from(new Set(products.map(p => p.category)))];
+
     return (
         <PageWrapper>
             <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-20">
@@ -200,71 +209,95 @@ const AdminPage = () => {
                 </div>
                 
                 {view === 'orders' && (
-                    <div className="overflow-x-auto bg-white rounded-3xl shadow-sm border border-gray-100">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-gray-50 border-b border-gray-100">
-                                    <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">ORDER ID</th>
-                                    <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">USER</th>
-                                    <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">TOTAL</th>
-                                    <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">STATUS</th>
-                                    <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">CUSTOM INFO</th>
-                                    <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {orders.map((order) => (
-                                    <tr key={order._id}>
-                                        <td className="px-8 py-6 font-mono text-sm">{order._id}</td>
-                                        <td className="px-8 py-6 font-medium">{order.user.name}</td>
-                                        <td className="px-8 py-6 font-bold text-[#D85C63]">₹{order.totalAmount}</td>
-                                        <td className="px-8 py-6">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.orderStatus === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{order.orderStatus}</span>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            {order.products.some((p: any) => p.isCustom) ? (
-                                                <div className="space-y-2">
-                                                    {order.products.filter((p: any) => p.isCustom).map((p: any, idx: number) => (
-                                                        <div key={idx} className="text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                                            <p className="font-bold text-[#D85C63] mb-1">{p.customDetails.type}</p>
-                                                            <p className="text-gray-500 italic mb-2 line-clamp-2">"{p.customDetails.description}"</p>
-                                                            {p.customDetails.referenceImage && (
-                                                                <a href={p.customDetails.referenceImage} target="_blank" rel="noreferrer" className="block w-12 h-12 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all">
-                                                                    <img src={p.customDetails.referenceImage} className="w-full h-full object-cover" alt="Reference" />
-                                                                </a>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <span className="text-gray-300 text-xs italic">Standard Order</span>
-                                            )}
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center gap-3">
-                                                <select 
-                                                    value={order.orderStatus} 
-                                                    onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)} 
-                                                    className="text-sm border border-gray-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-[#D85C63]/20 transition-all bg-white"
-                                                >
-                                                    <option value="Pending">Pending</option>
-                                                    <option value="Shipped">Shipped</option>
-                                                    <option value="Delivered">Delivered</option>
-                                                    <option value="Cancelled">Cancelled</option>
-                                                </select>
-                                                <button 
-                                                    onClick={() => handleDeleteOrder(order._id)}
-                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                                                    title="Delete Order"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                            <span className="text-sm font-bold text-gray-400 uppercase tracking-wider pl-4">Filter by Category:</span>
+                            <select 
+                                value={orderCategoryFilter}
+                                onChange={(e) => setOrderCategoryFilter(e.target.value)}
+                                className="bg-gray-50 border-none rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#D85C63]/20 transition-all cursor-pointer"
+                            >
+                                {categoriesList.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
                                 ))}
-                            </tbody>
-                        </table>
+                            </select>
+                            <span className="ml-auto pr-4 text-sm text-gray-400 font-medium">
+                                Showing {filteredOrders.length} {filteredOrders.length === 1 ? 'order' : 'orders'}
+                            </span>
+                        </div>
+
+                        <div className="overflow-x-auto bg-white rounded-3xl shadow-sm border border-gray-100">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-50 border-b border-gray-100">
+                                        <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">ORDER ID</th>
+                                        <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">USER</th>
+                                        <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">TOTAL</th>
+                                        <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">STATUS</th>
+                                        <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">CUSTOM INFO</th>
+                                        <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {filteredOrders.map((order) => (
+                                        <tr key={order._id}>
+                                            <td className="px-8 py-6 font-mono text-sm">{order._id}</td>
+                                            <td className="px-8 py-6 font-medium">{order.user.name}</td>
+                                            <td className="px-8 py-6 font-bold text-[#D85C63]">₹{order.totalAmount}</td>
+                                            <td className="px-8 py-6">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.orderStatus === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{order.orderStatus}</span>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                {order.products.some((p: any) => p.isCustom) ? (
+                                                    <div className="space-y-2">
+                                                        {order.products.filter((p: any) => p.isCustom).map((p: any, idx: number) => (
+                                                            <div key={idx} className="text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                <p className="font-bold text-[#D85C63] mb-1">{p.customDetails?.type || 'Custom Painting'}</p>
+                                                                <p className="text-gray-500 italic mb-2 line-clamp-2">"{p.customDetails?.description}"</p>
+                                                                {p.customDetails?.referenceImage && (
+                                                                    <a href={p.customDetails.referenceImage} target="_blank" rel="noreferrer" className="block w-12 h-12 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all">
+                                                                        <img src={p.customDetails.referenceImage} className="w-full h-full object-cover" alt="Reference" />
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-1">
+                                                        {order.products.map((p: any, idx: number) => (
+                                                            <div key={idx} className="text-[10px] text-gray-400">
+                                                                • {p.product?.name} ({p.product?.category})
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex items-center gap-3">
+                                                    <select 
+                                                        value={order.orderStatus} 
+                                                        onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)} 
+                                                        className="text-sm border border-gray-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-[#D85C63]/20 transition-all bg-white"
+                                                    >
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="Shipped">Shipped</option>
+                                                        <option value="Delivered">Delivered</option>
+                                                        <option value="Cancelled">Cancelled</option>
+                                                    </select>
+                                                    <button 
+                                                        onClick={() => handleDeleteOrder(order._id)}
+                                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                                        title="Delete Order"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
 
