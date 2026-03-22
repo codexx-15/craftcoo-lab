@@ -248,29 +248,43 @@ const AdminPage = () => {
                                                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.orderStatus === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{order.orderStatus}</span>
                                             </td>
                                             <td className="px-8 py-6">
-                                                {order.products.some((p: any) => p.isCustom) ? (
-                                                    <div className="space-y-2">
-                                                        {order.products.filter((p: any) => p.isCustom).map((p: any, idx: number) => (
-                                                            <div key={idx} className="text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                                                <p className="font-bold text-[#D85C63] mb-1">{p.customDetails?.type || 'Custom Painting'}</p>
-                                                                <p className="text-gray-500 italic mb-2 line-clamp-2">"{p.customDetails?.description}"</p>
-                                                                {p.customDetails?.referenceImage && (
-                                                                    <a href={p.customDetails.referenceImage} target="_blank" rel="noreferrer" className="block w-12 h-12 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all">
-                                                                        <img src={p.customDetails.referenceImage} className="w-full h-full object-cover" alt="Reference" />
-                                                                    </a>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="space-y-1">
-                                                        {order.products.map((p: any, idx: number) => (
-                                                            <div key={idx} className="text-[10px] text-gray-400">
-                                                                • {p.product?.name} ({p.product?.category})
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                <div className="space-y-3">
+                                                    {order.products.map((p: any, idx: number) => (
+                                                        <div key={idx} className={`p-3 rounded-xl border ${p.isCustom ? 'bg-gray-50 border-[#D85C63]/20' : 'bg-white border-gray-100'}`}>
+                                                            {p.isCustom ? (
+                                                                <div className="space-y-2">
+                                                                    <div className="flex justify-between items-start">
+                                                                        <p className="text-xs font-bold text-[#D85C63] uppercase tracking-tighter">Custom: {p.customDetails?.type || 'Painting'}</p>
+                                                                        <span className="text-[10px] font-bold text-gray-400">Qty: {p.quantity}</span>
+                                                                    </div>
+                                                                    <p className="text-[11px] text-gray-500 italic line-clamp-2">"{p.customDetails?.description}"</p>
+                                                                    <div className="flex items-center gap-2">
+                                                                        {p.customDetails?.referenceImage && (
+                                                                            <a href={p.customDetails.referenceImage} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all">
+                                                                                <img src={p.customDetails.referenceImage} className="w-full h-full object-cover" alt="Reference" />
+                                                                            </a>
+                                                                        )}
+                                                                        <div className="text-[10px] text-gray-400">
+                                                                            <p>{p.customDetails?.style} • {p.customDetails?.size}</p>
+                                                                            <p>Price: ₹{p.price}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="flex justify-between items-center">
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-gray-700">{p.product?.name || 'Standard Product'}</p>
+                                                                        <p className="text-[10px] text-gray-400 uppercase tracking-widest">{p.product?.category}</p>
+                                                                    </div>
+                                                                    <div className="text-right">
+                                                                        <p className="text-[10px] font-bold text-gray-400">Qty: {p.quantity}</p>
+                                                                        <p className="text-[10px] text-[#D85C63] font-bold">₹{p.price}</p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </td>
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center gap-3">
