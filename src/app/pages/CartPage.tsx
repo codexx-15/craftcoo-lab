@@ -59,7 +59,10 @@ const CartPage = () => {
     if (loading) return <div className="text-center py-20">Loading cart...</div>;
     if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
 
-    const total = cart?.items.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0) || 0;
+    const total = cart?.items.reduce((acc: number, item: any) => {
+        const itemPrice = item.isCustom ? item.price : item.product.price;
+        return acc + itemPrice * item.quantity;
+    }, 0) || 0;
 
     return (
         <PageWrapper>
@@ -76,12 +79,20 @@ const CartPage = () => {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                         <div className="lg:col-span-2 space-y-6">
-                            {cart?.items.map((item: any) => (
-                                <div key={item.product._id} className="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                                    <img src={item.product.image} alt={item.product.name} className="w-24 h-24 object-cover rounded-xl" />
+                            {cart?.items.map((item: any, index: number) => (
+                                <div key={item.product._id + (item.isCustom ? index : '')} className="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                    <img src={item.isCustom ? item.customDetails.referenceImage : item.product.image} alt={item.product.name} className="w-24 h-24 object-cover rounded-xl" />
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-medium mb-1">{item.product.name}</h3>
-                                        <p className="text-[#D85C63] font-semibold">₹{item.product.price}</p>
+                                        <h3 className="text-xl font-medium mb-1">
+                                            {item.isCustom ? `Custom ${item.customDetails.type} Painting` : item.product.name}
+                                        </h3>
+                                        {item.isCustom && (
+                                            <div className="text-xs text-gray-400 space-y-1 mb-2">
+                                                <p>{item.customDetails.style} • {item.customDetails.size}</p>
+                                                <p className="italic line-clamp-1">"{item.customDetails.description}"</p>
+                                            </div>
+                                        )}
+                                        <p className="text-[#D85C63] font-semibold">₹{item.isCustom ? item.price : item.product.price}</p>
                                     </div>
                                     <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-full">
                                         <button onClick={() => updateQuantity(item.product._id, item.quantity - 1)} className="hover:text-[#D85C63]"><Minus size={18} /></button>

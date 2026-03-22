@@ -16,17 +16,25 @@ exports.getCart = async (req, res) => {
 
 // Add to cart
 exports.addToCart = async (req, res) => {
-    const { productId, quantity } = req.body;
+    const { productId, quantity, isCustom, price, customDetails } = req.body;
     try {
         let cart = await Cart.findOne({ user: req.user._id });
         if (!cart) {
-            cart = await Cart.create({ user: req.user._id, items: [{ product: productId, quantity }] });
+            cart = await Cart.create({ 
+                user: req.user._id, 
+                items: [{ product: productId, quantity, isCustom, price, customDetails }] 
+            });
         } else {
-            const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
-            if (itemIndex > -1) {
-                cart.items[itemIndex].quantity += quantity;
+            // For custom items, always add as a new item because details might differ
+            if (isCustom) {
+                cart.items.push({ product: productId, quantity, isCustom, price, customDetails });
             } else {
-                cart.items.push({ product: productId, quantity });
+                const itemIndex = cart.items.findIndex(item => !item.isCustom && item.product.toString() === productId);
+                if (itemIndex > -1) {
+                    cart.items[itemIndex].quantity += quantity;
+                } else {
+                    cart.items.push({ product: productId, quantity });
+                }
             }
             await cart.save();
         }
