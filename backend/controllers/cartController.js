@@ -17,6 +17,7 @@ exports.getCart = async (req, res) => {
 // Add to cart
 exports.addToCart = async (req, res) => {
     const { productId, quantity, isCustom, price, customDetails } = req.body;
+    console.log('Add to cart request:', { productId, quantity, isCustom, price, customDetails });
     try {
         let cart = await Cart.findOne({ user: req.user._id });
         if (!cart) {

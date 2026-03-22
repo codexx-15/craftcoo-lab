@@ -56,6 +56,15 @@ const CustomPaintingPage = () => {
 
   const addToCart = async () => {
     try {
+      // 1. Fetch the Custom Painting product ID dynamically to avoid environment issues
+      const { data: products } = await API.get('/products');
+      const customProduct = products.find((p: any) => p.name === 'Custom Painting');
+      
+      if (!customProduct) {
+        toast.error('Custom Painting product not found. Please contact support.');
+        return;
+      }
+
       let imageUrl = '';
       if (customData.image) {
         const formData = new FormData();
@@ -67,7 +76,7 @@ const CustomPaintingPage = () => {
       }
 
       const orderData = {
-        productId: '69bfda57f84fb4c721f9e6a8', // Valid Custom Painting ID
+        productId: customProduct._id,
         quantity: 1,
         isCustom: true,
         price: price,
@@ -88,8 +97,9 @@ const CustomPaintingPage = () => {
       await updateCartCount();
       toast.success('Custom painting added to cart!');
       setStep(0);
-      navigate('/cart'); // Go to cart directly
+      navigate('/cart');
     } catch (err: any) {
+      console.error('Add to cart error:', err);
       if (err.response?.status === 401) {
         toast.error('Please login to add to cart');
         navigate('/login');

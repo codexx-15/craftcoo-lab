@@ -7,7 +7,22 @@ const connectDB = require('./config/db');
 dotenv.config();
 
 // Connect to MongoDB
-connectDB();
+connectDB().then(async () => {
+    // Seed system products
+    const Product = require('./models/Product');
+    const customProduct = await Product.findOne({ name: 'Custom Painting' });
+    if (!customProduct) {
+        await Product.create({
+            name: 'Custom Painting',
+            description: 'Your custom masterpiece',
+            price: 0,
+            category: 'Custom',
+            image: '/images/custom-paintings.png',
+            stock: 999
+        });
+        console.log('Seed: Custom Painting product created');
+    }
+});
 
 const app = express();
 
