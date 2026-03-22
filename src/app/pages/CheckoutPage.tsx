@@ -27,11 +27,17 @@ const CheckoutPage = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const total = cart.items.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0);
+            const total = cart.items.reduce((acc: number, item: any) => {
+                const itemPrice = item.isCustom ? item.price : item.product.price;
+                return acc + itemPrice * item.quantity;
+            }, 0);
+
             const products = cart.items.map((item: any) => ({
                 product: item.product._id,
                 quantity: item.quantity,
-                price: item.product.price
+                price: item.isCustom ? item.price : item.product.price,
+                isCustom: item.isCustom || false,
+                customDetails: item.customDetails || null
             }));
 
             const { data } = await API.post('/orders', { products, totalAmount: total, shippingAddress: address });
@@ -76,7 +82,10 @@ const CheckoutPage = () => {
 
     if (!cart) return <div className="text-center py-20">Loading checkout...</div>;
 
-    const total = cart.items.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0);
+    const total = cart.items.reduce((acc: number, item: any) => {
+        const itemPrice = item.isCustom ? item.price : item.product.price;
+        return acc + itemPrice * item.quantity;
+    }, 0);
 
     return (
         <PageWrapper>
