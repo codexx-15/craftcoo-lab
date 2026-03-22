@@ -151,11 +151,6 @@ export function Header() {
           <nav>
             <ul className="flex items-center gap-4 lg:gap-8 text-sm">
               <li>
-                <Link to="/custom-paintings" className="hover:text-[#D85C63] transition-colors duration-300 font-bold">
-                  Custom Paintings
-                </Link>
-              </li>
-              <li>
                 <Link to="/category/paintings" className="hover:text-[#D85C63] transition-colors duration-300">
                   Categories
                 </Link>
