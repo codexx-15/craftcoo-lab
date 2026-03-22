@@ -4,9 +4,9 @@ export function Footer() {
     return (
       <footer className="bg-[#D85C63] text-white py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          <div className="flex flex-col md:flex-row justify-between gap-12 mb-12">
             {/* About */}
-            <div>
+            <div className="max-w-sm">
               <h3 className="text-xl mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
                 About craftco.lab
               </h3>
@@ -16,7 +16,7 @@ export function Footer() {
             </div>
             
             {/* Quick Links */}
-            <div>
+            <div className="md:text-center">
               <h3 className="text-xl mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Quick Links
               </h3>
@@ -45,7 +45,7 @@ export function Footer() {
             </div>
             
             {/* Store Policy */}
-            <div>
+            <div className="md:text-right">
               <h3 className="text-xl mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Store Policy
               </h3>
