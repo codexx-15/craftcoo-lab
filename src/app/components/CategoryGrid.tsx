@@ -20,7 +20,7 @@ export function CategoryGrid() {
 
   const displayCollections = collections.length > 0 ? collections : [
     { id: 1, title: 'Paintings', image: '/images/paintings.png', slug: 'paintings' },
-    { id: 2, title: 'Custom Paintings', image: '/images/custom-paintings.png', slug: 'custom-paintings' },
+    { id: 2, title: 'Custom Paintings', image: '/images/custom-paintings.png', slug: 'custom-paintings', isCustom: true },
     { id: 3, title: 'Bookmarks', image: '/images/bookmarks.png', slug: 'bookmarks' },
     { id: 4, title: 'Postcards', image: '/images/postcards.png', slug: 'postcards' }
   ];
@@ -34,7 +34,7 @@ export function CategoryGrid() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {displayCollections.map((category, idx) => (
           <Link 
-            to={`/category/${category.slug}`}
+            to={category.isCustom ? '/custom-paintings' : `/category/${category.slug}`}
             key={category._id || idx}
             className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-lg transition-all duration-500"
           >
