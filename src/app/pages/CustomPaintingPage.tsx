@@ -60,7 +60,7 @@ const CustomPaintingPage = () => {
       if (customData.image) {
         const formData = new FormData();
         formData.append('image', customData.image);
-        const { data: uploadData } = await API.post('/upload', formData, {
+        const { data: uploadData } = await API.post('/upload/custom', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         imageUrl = uploadData.url;
