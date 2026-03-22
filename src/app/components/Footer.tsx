@@ -4,7 +4,7 @@ export function Footer() {
     return (
       <footer className="bg-[#D85C63] text-white py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             {/* About */}
             <div>
               <h3 className="text-xl mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -72,29 +72,6 @@ export function Footer() {
                 </li>
               </ul>
             </div>
-            
-            {/* Newsletter */}
-            <div>
-              <h3 className="text-xl mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Newsletter
-              </h3>
-              <p className="text-white/90 text-sm mb-4 leading-relaxed">
-                Subscribe to get updates on new arrivals and exclusive offers.
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300"
-                />
-                <button 
-                  className="px-6 py-2 bg-white text-[#D85C63] rounded-lg hover:bg-white/90 transition-all duration-300 hover:shadow-lg"
-                >
-                  Subscribe
-                </button>
-              </div>
-            </div>
-  
           </div>
           
           <div className="border-t border-white/20 pt-8 text-center text-sm text-white/80">
