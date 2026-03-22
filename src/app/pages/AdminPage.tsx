@@ -260,8 +260,11 @@ const AdminPage = () => {
                                                                     <p className="text-[11px] text-gray-500 italic line-clamp-2">"{p.customDetails?.description}"</p>
                                                                     <div className="flex items-center gap-2">
                                                                         {p.customDetails?.referenceImage && (
-                                                                            <a href={p.customDetails.referenceImage} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all">
+                                                                            <a href={p.customDetails.referenceImage} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all group/img relative">
                                                                                 <img src={p.customDetails.referenceImage} className="w-full h-full object-cover" alt="Reference" />
+                                                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity">
+                                                                                    <ExternalLink size={12} className="text-white" />
+                                                                                </div>
                                                                             </a>
                                                                         )}
                                                                         <div className="text-[10px] text-gray-400">
@@ -271,10 +274,20 @@ const AdminPage = () => {
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <div className="flex justify-between items-center">
-                                                                    <div>
-                                                                        <p className="text-xs font-bold text-gray-700">{p.product?.name || 'Standard Product'}</p>
-                                                                        <p className="text-[10px] text-gray-400 uppercase tracking-widest">{p.product?.category}</p>
+                                                                <div className="flex justify-between items-center gap-4">
+                                                                    <div className="flex items-center gap-3">
+                                                                        {p.product?.image && (
+                                                                            <a href={p.product.image} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all group/img relative flex-shrink-0">
+                                                                                <img src={p.product.image} className="w-full h-full object-cover" alt={p.product.name} />
+                                                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity">
+                                                                                    <ExternalLink size={12} className="text-white" />
+                                                                                </div>
+                                                                            </a>
+                                                                        )}
+                                                                        <div>
+                                                                            <p className="text-xs font-bold text-gray-700">{p.product?.name || 'Standard Product'}</p>
+                                                                            <p className="text-[10px] text-gray-400 uppercase tracking-widest">{p.product?.category}</p>
+                                                                        </div>
                                                                     </div>
                                                                     <div className="text-right">
                                                                         <p className="text-[10px] font-bold text-gray-400">Qty: {p.quantity}</p>
