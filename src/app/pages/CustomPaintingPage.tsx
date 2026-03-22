@@ -67,7 +67,7 @@ const CustomPaintingPage = () => {
       }
 
       const orderData = {
-        productId: '67da6789e4b0a1a2b3c4d5e6', // Special ID for custom paintings
+        productId: '69bfda57f84fb4c721f9e6a8', // Valid Custom Painting ID
         quantity: 1,
         isCustom: true,
         price: price,
@@ -88,8 +88,14 @@ const CustomPaintingPage = () => {
       await updateCartCount();
       toast.success('Custom painting added to cart!');
       setStep(0);
-    } catch (err) {
-      toast.error('Failed to add to cart. Please try again.');
+      navigate('/cart'); // Go to cart directly
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        toast.error('Please login to add to cart');
+        navigate('/login');
+      } else {
+        toast.error('Failed to add to cart. Please try again.');
+      }
     }
   };
 
