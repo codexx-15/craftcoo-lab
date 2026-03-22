@@ -56,23 +56,34 @@ const CustomPaintingPage = () => {
 
   const addToCart = async () => {
     try {
-      // In a real scenario, you'd upload the image first
-      // For now, we'll send the custom data
+      let imageUrl = '';
+      if (customData.image) {
+        const formData = new FormData();
+        formData.append('image', customData.image);
+        const { data: uploadData } = await API.post('/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        imageUrl = uploadData.url;
+      }
+
       const orderData = {
-        productId: 'custom-painting-id', // Special ID for custom paintings or dynamic creation
-        name: `Custom ${customData.type} Painting`,
-        price: price,
-        customization: { ...customData, image: undefined, imagePreview: undefined }
-      };
-      
-      // Since backend needs a real product ID, we'd ideally have a "Custom Painting" product entry
-      // For this demo, let's assume we have a generic ID or handle it in the backend
-      await API.post('/cart', { 
-        productId: '67da6789e4b0a1a2b3c4d5e6', // Use a placeholder product ID that exists or create one
+        productId: '67da6789e4b0a1a2b3c4d5e6', // Special ID for custom paintings
         quantity: 1,
         isCustom: true,
-        customDetails: orderData
-      });
+        price: price,
+        customDetails: {
+          type: customData.type,
+          style: customData.style,
+          size: customData.size,
+          description: customData.description,
+          referenceImage: imageUrl,
+          frame: customData.frame,
+          extraCharacter: customData.extraCharacter,
+          fastDelivery: customData.fastDelivery
+        }
+      };
+      
+      await API.post('/cart', orderData);
       
       await updateCartCount();
       toast.success('Custom painting added to cart!');

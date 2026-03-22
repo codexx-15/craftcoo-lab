@@ -195,6 +195,7 @@ const AdminPage = () => {
                                     <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">USER</th>
                                     <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">TOTAL</th>
                                     <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">STATUS</th>
+                                    <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">CUSTOM INFO</th>
                                     <th className="px-8 py-6 text-sm font-semibold text-gray-400 uppercase">ACTIONS</th>
                                 </tr>
                             </thead>
@@ -206,6 +207,25 @@ const AdminPage = () => {
                                         <td className="px-8 py-6 font-bold text-[#D85C63]">₹{order.totalAmount}</td>
                                         <td className="px-8 py-6">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.orderStatus === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{order.orderStatus}</span>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            {order.products.some((p: any) => p.isCustom) ? (
+                                                <div className="space-y-2">
+                                                    {order.products.filter((p: any) => p.isCustom).map((p: any, idx: number) => (
+                                                        <div key={idx} className="text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                            <p className="font-bold text-[#D85C63] mb-1">{p.customDetails.type}</p>
+                                                            <p className="text-gray-500 italic mb-2 line-clamp-2">"{p.customDetails.description}"</p>
+                                                            {p.customDetails.referenceImage && (
+                                                                <a href={p.customDetails.referenceImage} target="_blank" rel="noreferrer" className="block w-12 h-12 rounded-lg overflow-hidden border border-gray-200 hover:border-[#D85C63] transition-all">
+                                                                    <img src={p.customDetails.referenceImage} className="w-full h-full object-cover" alt="Reference" />
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <span className="text-gray-300 text-xs italic">Standard Order</span>
+                                            )}
                                         </td>
                                         <td className="px-8 py-6">
                                             <select value={order.orderStatus} onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)} className="text-sm border rounded-lg px-2 py-1 outline-none">

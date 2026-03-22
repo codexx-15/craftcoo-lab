@@ -5,7 +5,18 @@ const orderSchema = new mongoose.Schema({
     products: [{
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
         quantity: { type: Number, required: true },
-        price: { type: Number, required: true }
+        price: { type: Number, required: true },
+        isCustom: { type: Boolean, default: false },
+        customDetails: {
+            type: { type: String },
+            style: { type: String },
+            size: { type: String },
+            description: { type: String },
+            referenceImage: { type: String },
+            frame: { type: Boolean },
+            extraCharacter: { type: Boolean },
+            fastDelivery: { type: Boolean }
+        }
     }],
     totalAmount: { type: Number, required: true },
     paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed'], default: 'Pending' },
