@@ -61,7 +61,7 @@ const CartPage = () => {
     if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
 
     const total = cart?.items.reduce((acc: number, item: any) => {
-        const itemPrice = item.isCustom ? item.price : item.product.price;
+        const itemPrice = item.isCustom ? item.price : (item.product?.price || 0);
         return acc + itemPrice * item.quantity;
     }, 0) || 0;
 
@@ -80,31 +80,38 @@ const CartPage = () => {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                         <div className="lg:col-span-2 space-y-6">
-                            {cart?.items.map((item: any, index: number) => (
-                                <div key={item.product._id + (item.isCustom ? index : '')} className="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                                    <img src={item.isCustom ? item.customDetails.referenceImage : item.product.image} alt={item.product.name} className="w-24 h-24 object-cover rounded-xl" />
-                                    <div className="flex-1">
-                                        <h3 className="text-xl font-medium mb-1">
-                                            {item.isCustom ? `Custom ${item.customDetails.type} Painting` : item.product.name}
-                                        </h3>
-                                        {item.isCustom && (
-                                            <div className="text-xs text-gray-400 space-y-1 mb-2">
-                                                <p>{item.customDetails.style} • {item.customDetails.size}</p>
-                                                <p className="italic line-clamp-1">"{item.customDetails.description}"</p>
-                                            </div>
-                                        )}
-                                        <p className="text-[#D85C63] font-semibold">₹{item.isCustom ? item.price : item.product.price}</p>
+                            {cart?.items.map((item: any, index: number) => {
+                                const productId = item.product?._id || `custom-${index}`;
+                                return (
+                                    <div key={productId + (item.isCustom ? `-${index}` : '')} className="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                        <img 
+                                            src={item.isCustom ? item.customDetails.referenceImage : (item.product?.image || '/images/placeholder.png')} 
+                                            alt={item.isCustom ? 'Custom Painting' : (item.product?.name || 'Product')} 
+                                            className="w-24 h-24 object-cover rounded-xl" 
+                                        />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-medium mb-1">
+                                                {item.isCustom ? `Custom ${item.customDetails.type} Painting` : (item.product?.name || 'Unknown Product')}
+                                            </h3>
+                                            {item.isCustom && (
+                                                <div className="text-xs text-gray-400 space-y-1 mb-2">
+                                                    <p>{item.customDetails.style} • {item.customDetails.size}</p>
+                                                    <p className="italic line-clamp-1">"{item.customDetails.description}"</p>
+                                                </div>
+                                            )}
+                                            <p className="text-[#D85C63] font-semibold">₹{item.isCustom ? item.price : (item.product?.price || 0)}</p>
+                                        </div>
+                                        <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-full">
+                                            <button onClick={() => updateQuantity(productId, item.quantity - 1, index)} className="hover:text-[#D85C63]"><Minus size={18} /></button>
+                                            <span className="font-medium w-6 text-center">{item.quantity}</span>
+                                            <button onClick={() => updateQuantity(productId, item.quantity + 1, index)} className="hover:text-[#D85C63]"><Plus size={18} /></button>
+                                        </div>
+                                        <button onClick={() => removeItem(productId, index)} className="text-gray-400 hover:text-red-500 transition-colors">
+                                            <Trash2 size={22} />
+                                        </button>
                                     </div>
-                                    <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-full">
-                                        <button onClick={() => updateQuantity(item.product._id, item.quantity - 1, index)} className="hover:text-[#D85C63]"><Minus size={18} /></button>
-                                        <span className="font-medium w-6 text-center">{item.quantity}</span>
-                                        <button onClick={() => updateQuantity(item.product._id, item.quantity + 1, index)} className="hover:text-[#D85C63]"><Plus size={18} /></button>
-                                    </div>
-                                    <button onClick={() => removeItem(item.product._id, index)} className="text-gray-400 hover:text-red-500 transition-colors">
-                                        <Trash2 size={22} />
-                                    </button>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                         
                         <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-fit sticky top-32">
