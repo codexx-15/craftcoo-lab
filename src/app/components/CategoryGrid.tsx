@@ -10,7 +10,12 @@ export function CategoryGrid() {
     const fetchSettings = async () => {
       try {
         const { data } = await API.get('/settings');
-        setCollections(data.collections);
+        // Ensure custom paintings in fetched data also have isCustom flag
+        const updatedCollections = data.collections.map((c: any) => ({
+          ...c,
+          isCustom: c.slug === 'custom-paintings' || c.title?.toLowerCase().includes('custom')
+        }));
+        setCollections(updatedCollections);
       } catch (err) {
         console.error('Failed to fetch collections:', err);
       }
