@@ -194,7 +194,7 @@ const AdminPage = () => {
         return order.products.some((p: any) => !p.isCustom && p.product?.category === orderCategoryFilter);
     });
 
-    const categoriesList = ['All', 'Custom', ...Array.from(new Set(products.map(p => p.category)))];
+    const categoriesList = ['All', 'Custom', ...Array.from(new Set(products.map(p => p.category).filter(c => c && c !== 'Custom')))];
 
     return (
         <PageWrapper>
