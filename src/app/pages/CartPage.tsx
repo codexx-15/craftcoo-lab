@@ -22,8 +22,10 @@ const CartPage = () => {
         try {
             setLoading(true);
             const { data } = await API.get('/cart');
+            console.log('Cart data fetched:', data);
             setCart(data);
         } catch (err: any) {
+            console.error('Cart fetch error:', err);
             if (err.response?.status === 401) {
                 navigate('/login');
             } else {
@@ -60,9 +62,9 @@ const CartPage = () => {
     if (loading) return <div className="text-center py-20">Loading cart...</div>;
     if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
 
-    const total = cart?.items.reduce((acc: number, item: any) => {
+    const total = cart?.items?.reduce((acc: number, item: any) => {
         const itemPrice = item.isCustom ? item.price : (item.product?.price || 0);
-        return acc + itemPrice * item.quantity;
+        return acc + itemPrice * (item.quantity || 0);
     }, 0) || 0;
 
     return (
@@ -70,7 +72,7 @@ const CartPage = () => {
             <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-20">
                 <h2 className="text-4xl mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>Your Cart</h2>
                 
-                {cart?.items.length === 0 ? (
+                {!cart?.items || cart.items.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
                         <p className="text-xl text-gray-500 mb-8">Your cart is empty.</p>
                         <Link to="/" className="bg-[#D85C63] text-white py-3 px-10 rounded-full hover:bg-[#d1535a] transition-all">
@@ -80,37 +82,42 @@ const CartPage = () => {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                         <div className="lg:col-span-2 space-y-6">
-                            {cart?.items.map((item: any, index: number) => {
-                                const productId = item.product?._id || `custom-${index}`;
-                                return (
-                                    <div key={productId + (item.isCustom ? `-${index}` : '')} className="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                                        <img 
-                                            src={item.isCustom ? item.customDetails.referenceImage : (item.product?.image || '/images/placeholder.png')} 
-                                            alt={item.isCustom ? 'Custom Painting' : (item.product?.name || 'Product')} 
-                                            className="w-24 h-24 object-cover rounded-xl" 
-                                        />
-                                        <div className="flex-1">
-                                            <h3 className="text-xl font-medium mb-1">
-                                                {item.isCustom ? `Custom ${item.customDetails.type} Painting` : (item.product?.name || 'Unknown Product')}
-                                            </h3>
-                                            {item.isCustom && (
-                                                <div className="text-xs text-gray-400 space-y-1 mb-2">
-                                                    <p>{item.customDetails.style} • {item.customDetails.size}</p>
-                                                    <p className="italic line-clamp-1">"{item.customDetails.description}"</p>
-                                                </div>
-                                            )}
-                                            <p className="text-[#D85C63] font-semibold">₹{item.isCustom ? item.price : (item.product?.price || 0)}</p>
+                            {cart?.items?.map((item: any, index: number) => {
+                                try {
+                                    const productId = item.product?._id || `custom-${index}`;
+                                    return (
+                                        <div key={productId + (item.isCustom ? `-${index}` : '')} className="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                            <img 
+                                                src={item.isCustom ? item.customDetails?.referenceImage : (item.product?.image || '/images/placeholder.png')} 
+                                                alt={item.isCustom ? 'Custom Painting' : (item.product?.name || 'Product')} 
+                                                className="w-24 h-24 object-cover rounded-xl" 
+                                            />
+                                            <div className="flex-1">
+                                                <h3 className="text-xl font-medium mb-1">
+                                                    {item.isCustom ? `Custom ${item.customDetails?.type || ''} Painting` : (item.product?.name || 'Unknown Product')}
+                                                </h3>
+                                                {item.isCustom && item.customDetails && (
+                                                    <div className="text-xs text-gray-400 space-y-1 mb-2">
+                                                        <p>{item.customDetails.style} • {item.customDetails.size}</p>
+                                                        <p className="italic line-clamp-1">"{item.customDetails.description}"</p>
+                                                    </div>
+                                                )}
+                                                <p className="text-[#D85C63] font-semibold">₹{item.isCustom ? item.price : (item.product?.price || 0)}</p>
+                                            </div>
+                                            <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-full">
+                                                <button onClick={() => updateQuantity(productId, item.quantity - 1, index)} className="hover:text-[#D85C63]"><Minus size={18} /></button>
+                                                <span className="font-medium w-6 text-center">{item.quantity}</span>
+                                                <button onClick={() => updateQuantity(productId, item.quantity + 1, index)} className="hover:text-[#D85C63]"><Plus size={18} /></button>
+                                            </div>
+                                            <button onClick={() => removeItem(productId, index)} className="text-gray-400 hover:text-red-500 transition-colors">
+                                                <Trash2 size={22} />
+                                            </button>
                                         </div>
-                                        <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-full">
-                                            <button onClick={() => updateQuantity(productId, item.quantity - 1, index)} className="hover:text-[#D85C63]"><Minus size={18} /></button>
-                                            <span className="font-medium w-6 text-center">{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(productId, item.quantity + 1, index)} className="hover:text-[#D85C63]"><Plus size={18} /></button>
-                                        </div>
-                                        <button onClick={() => removeItem(productId, index)} className="text-gray-400 hover:text-red-500 transition-colors">
-                                            <Trash2 size={22} />
-                                        </button>
-                                    </div>
-                                );
+                                    );
+                                } catch (e) {
+                                    console.error('Error rendering cart item:', e, item);
+                                    return null;
+                                }
                             })}
                         </div>
                         
