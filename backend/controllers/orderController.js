@@ -16,23 +16,35 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 exports.createOrder = async (req, res) => {
     const { products, totalAmount, shippingAddress } = req.body;
     try {
-        if (!razorpay) {
-            return res.status(400).json({ message: 'Payment gateway is not configured yet. Please try again later.' });
-        }
-        const order = await Order.create({
+        const orderData = {
             user: req.user._id,
             products,
             totalAmount,
             shippingAddress
-        });
-        const razorpayOrder = await razorpay.orders.create({
-            amount: totalAmount * 100, // Amount in paise
-            currency: 'INR',
-            receipt: order._id.toString()
-        });
-        order.razorpayOrderId = razorpayOrder.id;
-        await order.save();
-        res.status(201).json({ order, razorpayOrder });
+        };
+
+        const order = await Order.create(orderData);
+
+        // If Razorpay is configured, create Razorpay order
+        if (razorpay) {
+            try {
+                const razorpayOrder = await razorpay.orders.create({
+                    amount: totalAmount * 100, // Amount in paise
+                    currency: 'INR',
+                    receipt: order._id.toString()
+                });
+                order.razorpayOrderId = razorpayOrder.id;
+                await order.save();
+                return res.status(201).json({ order, razorpayOrder });
+            } catch (rzpError) {
+                console.error('Razorpay Order Error:', rzpError);
+                // Fallback: Order created but payment initialization failed
+                return res.status(201).json({ order, message: 'Order created but payment gateway error' });
+            }
+        }
+
+        // If Razorpay is NOT configured, just return the order (for testing/development)
+        res.status(201).json({ order });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
