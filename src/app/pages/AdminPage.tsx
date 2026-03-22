@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import API from '../api';
 import PageWrapper from '../components/PageWrapper';
-import { Plus, Trash2, Upload, Layout, Image as ImageIcon, ShoppingBag, X } from 'lucide-react';
+import { Plus, Trash2, Upload, Layout, Image as ImageIcon, ShoppingBag, X, Edit2, Save, ExternalLink, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AdminPage = () => {
     const [orders, setOrders] = useState<any[]>([]);
@@ -130,10 +131,22 @@ const AdminPage = () => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
                 await API.delete(`/products/${id}`);
-                fetchData();
                 alert('Product deleted!');
+                fetchData();
             } catch (err: any) {
                 alert(err.response?.data?.message || 'Failed to delete product');
+            }
+        }
+    };
+
+    const handleDeleteOrder = async (id: string) => {
+        if (window.confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+            try {
+                await API.delete(`/orders/${id}`);
+                toast.success('Order deleted successfully');
+                fetchData();
+            } catch (err: any) {
+                toast.error(err.response?.data?.message || 'Failed to delete order');
             }
         }
     };
@@ -141,10 +154,10 @@ const AdminPage = () => {
     const handleUpdateOrderStatus = async (id: string, status: string) => {
         try {
             await API.put(`/orders/${id}`, { status });
+            toast.success(`Order status updated to ${status}`);
             fetchData();
-            alert('Order status updated!');
         } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to update order status');
+            toast.error(err.response?.data?.message || 'Failed to update order status');
         }
     };
 
@@ -228,11 +241,25 @@ const AdminPage = () => {
                                             )}
                                         </td>
                                         <td className="px-8 py-6">
-                                            <select value={order.orderStatus} onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)} className="text-sm border rounded-lg px-2 py-1 outline-none">
-                                                <option value="Pending">Pending</option>
-                                                <option value="Shipped">Shipped</option>
-                                                <option value="Delivered">Delivered</option>
-                                            </select>
+                                            <div className="flex items-center gap-3">
+                                                <select 
+                                                    value={order.orderStatus} 
+                                                    onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)} 
+                                                    className="text-sm border border-gray-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-[#D85C63]/20 transition-all bg-white"
+                                                >
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Shipped">Shipped</option>
+                                                    <option value="Delivered">Delivered</option>
+                                                    <option value="Cancelled">Cancelled</option>
+                                                </select>
+                                                <button 
+                                                    onClick={() => handleDeleteOrder(order._id)}
+                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                                    title="Delete Order"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

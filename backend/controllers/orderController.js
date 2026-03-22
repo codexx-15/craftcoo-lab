@@ -38,6 +38,21 @@ exports.createOrder = async (req, res) => {
     }
 };
 
+// Delete order (Admin)
+exports.deleteOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (order) {
+            await order.deleteOne();
+            res.json({ message: 'Order deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Verify payment
 exports.verifyPayment = async (req, res) => {
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
