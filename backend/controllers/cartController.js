@@ -47,12 +47,18 @@ exports.addToCart = async (req, res) => {
 
 // Update quantity
 exports.updateQuantity = async (req, res) => {
-    const { productId, quantity } = req.body;
+    const { productId, quantity, index } = req.body;
     try {
         const cart = await Cart.findOne({ user: req.user._id });
         if (cart) {
-            const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
-            if (itemIndex > -1) {
+            let itemIndex = -1;
+            if (index !== undefined) {
+                itemIndex = index;
+            } else {
+                itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+            }
+
+            if (itemIndex > -1 && itemIndex < cart.items.length) {
                 cart.items[itemIndex].quantity = quantity;
                 await cart.save();
                 const populatedCart = await cart.populate('items.product');
@@ -71,10 +77,15 @@ exports.updateQuantity = async (req, res) => {
 // Remove item
 exports.removeItem = async (req, res) => {
     const { productId } = req.params;
+    const { index } = req.query;
     try {
         const cart = await Cart.findOne({ user: req.user._id });
         if (cart) {
-            cart.items = cart.items.filter(item => item.product.toString() !== productId);
+            if (index !== undefined) {
+                cart.items.splice(parseInt(index), 1);
+            } else {
+                cart.items = cart.items.filter(item => item.product.toString() !== productId);
+            }
             await cart.save();
             const populatedCart = await cart.populate('items.product');
             res.json(populatedCart);
