@@ -12,9 +12,17 @@ const OrdersPage = () => {
         const fetchOrders = async () => {
             try {
                 setLoading(true);
+                console.log('Fetching orders...');
                 const { data } = await API.get('/orders');
-                setOrders(data);
+                console.log('Orders received:', data);
+                if (Array.isArray(data)) {
+                    setOrders(data);
+                } else {
+                    console.error('Data received is not an array:', data);
+                    setOrders([]);
+                }
             } catch (err: any) {
+                console.error('Error fetching orders:', err);
                 setError(err.response?.data?.message || 'Failed to fetch orders');
             } finally {
                 setLoading(false);
@@ -23,8 +31,15 @@ const OrdersPage = () => {
         fetchOrders();
     }, []);
 
-    if (loading) return <div className="text-center py-20">Loading your orders...</div>;
-    if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
+    if (loading) return <div className="text-center py-20 min-h-[50vh] flex items-center justify-center">Loading your orders...</div>;
+    if (error) return (
+        <PageWrapper>
+            <div className="text-center py-20 min-h-[50vh] flex flex-col items-center justify-center">
+                <p className="text-red-500 text-xl mb-4">{error}</p>
+                <button onClick={() => window.location.reload()} className="bg-[#D85C63] text-white px-6 py-2 rounded-full">Retry</button>
+            </div>
+        </PageWrapper>
+    );
 
     return (
         <PageWrapper>
@@ -64,13 +79,22 @@ const OrdersPage = () => {
                                 </div>
                                 
                                 <div className="space-y-6">
-                                    {order.products.map((item: any) => (
-                                        <div key={item.product._id} className="flex items-center gap-6">
-                                            <img src={item.product.image} alt={item.product.name} className="w-20 h-20 object-cover rounded-xl border border-gray-100" />
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-medium text-lg truncate text-gray-800">{item.product.name}</h4>
-                                                <p className="text-gray-500">Quantity: {item.quantity} × ₹{item.price}</p>
-                                            </div>
+                                    {order.products.map((item: any, index: number) => (
+                                        <div key={item.product?._id || index} className="flex items-center gap-6">
+                                            {item.product ? (
+                                                <>
+                                                    <img src={item.product.image} alt={item.product.name} className="w-20 h-20 object-cover rounded-xl border border-gray-100" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="font-medium text-lg truncate text-gray-800">{item.product.name}</h4>
+                                                        <p className="text-gray-500">Quantity: {item.quantity} × ₹{item.price}</p>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-medium text-lg truncate text-gray-400">Product no longer available</h4>
+                                                    <p className="text-gray-500">Quantity: {item.quantity} × ₹{item.price}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

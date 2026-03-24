@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// @ts-ignore
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
 const API = axios.create({
-    baseURL: process.env.NODE_ENV === 'production' ? '/api' : 'http://127.0.0.1:5001/api',
+    baseURL,
 });
 
 // Add a request interceptor to include the token in headers

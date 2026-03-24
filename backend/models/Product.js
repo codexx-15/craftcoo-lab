@@ -8,6 +8,7 @@ const productSchema = new mongoose.Schema({
     image: { type: String, required: true }, // Main image
     images: [{ type: String }], // Additional image angles
     stock: { type: Number, required: true, default: 0 },
+    isLimitedEdition: { type: Boolean, default: false },
     rating: { type: Number, default: 0 },
     numReviews: { type: Number, default: 0 },
 }, { timestamps: true });

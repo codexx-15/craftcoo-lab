@@ -4,10 +4,10 @@ export function Footer() {
     return (
       <footer className="bg-[#D85C63] text-white py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between gap-12 mb-12">
+          <div className="flex flex-col md:flex-row justify-between gap-12 mb-12 text-center md:text-left">
             {/* About */}
-            <div className="max-w-sm">
-              <h3 className="text-xl mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <div className="max-w-sm mx-auto md:mx-0">
+              <h3 className="text-xl mb-6 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
                 About craftco.lab
               </h3>
               <p className="text-white/90 leading-relaxed text-sm">

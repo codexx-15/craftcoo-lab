@@ -53,17 +53,17 @@ export function FeaturedProducts() {
   if (error) return <div className="text-center py-12 text-red-500">{error}</div>;
 
   return (
-    <section className="bg-[#E6A8A8]/20 py-12 md:py-20">
+    <section className="bg-[#E6A8A8]/20 py-10 md:py-20">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <h2 className="text-3xl md:text-4xl text-center mb-8 md:mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h2 className="text-2xl md:text-4xl text-center mb-8 md:mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>
           Featured Products
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {products.map((product) => (
             <div 
               key={product._id}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-[#E6A8A8]/30"
+              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-[#E6A8A8]/30 flex flex-col h-full"
             >
               <Link to={`/product/${product._id}`}>
                 <div className="aspect-square relative overflow-hidden">
@@ -75,24 +75,24 @@ export function FeaturedProducts() {
                 </div>
               </Link>
               
-              <div className="p-6">
+              <div className="p-4 sm:p-6 flex flex-col flex-1">
                 <Link to={`/product/${product._id}`}>
-                  <h3 className="text-xl mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  <h3 className="text-lg sm:text-xl mb-2 sm:mb-3 line-clamp-1" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {product.name}
                   </h3>
                 </Link>
-                <p className="text-2xl text-[#D85C63] mb-5 font-semibold">
+                <p className="text-xl sm:text-2xl text-[#D85C63] mb-4 sm:mb-5 font-semibold">
                   ₹{product.price}
                 </p>
                 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 mt-auto">
                   <button 
                     onClick={() => handleWishlistToggle(product)}
-                    className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-100 bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group/wish"
+                    className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gray-100 bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group/wish"
                     aria-label="Add to wishlist"
                   >
                     <Heart 
-                      className={`w-5 h-5 transition-colors duration-300 ${isInWishlist(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${isInWishlist(product._id) ? 'fill-[#D85C63] text-[#D85C63]' : 'text-gray-400 group-hover/wish:text-[#D85C63]'}`} 
                     />
                   </button>
 
@@ -109,9 +109,9 @@ export function FeaturedProducts() {
                         toast.error(err.response?.data?.message || 'Failed to add to cart');
                       }
                     }}
-                    className="flex-1 flex items-center justify-center gap-2 bg-[#D85C63] text-white py-3 px-4 rounded-2xl font-semibold hover:bg-[#d1535a] hover:scale-[1.02] transition-all duration-300 shadow-[0_8px_18px_rgba(216,92,99,0.25)] hover:shadow-[0_10px_22px_rgba(216,92,99,0.35)]"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#D85C63] text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl text-sm sm:text-base font-semibold hover:bg-[#d1535a] hover:scale-[1.02] transition-all duration-300 shadow-[0_8px_18px_rgba(216,92,99,0.25)] hover:shadow-[0_10px_22px_rgba(216,92,99,0.35)]"
                   >
-                    <ShoppingBag className="w-5 h-5" />
+                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>Add to Cart</span>
                   </button>
                 </div>

@@ -9,6 +9,7 @@ export function ConnectSection() {
       
       <div className="grid grid-cols-2 gap-8">
         <div 
+          onClick={() => window.dispatchEvent(new CustomEvent('openChat'))}
           className="bg-white rounded-2xl p-12 text-center shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group border border-[#E6A8A8]/30"
         >
           <div className="inline-flex items-center justify-center w-20 h-20 bg-[#E6A8A8]/30 rounded-full mb-6 group-hover:bg-[#E6A8A8]/50 transition-colors duration-300">
@@ -22,8 +23,9 @@ export function ConnectSection() {
           </p>
         </div>
         
-        <div 
-          className="bg-white rounded-2xl p-12 text-center shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group border border-[#E6A8A8]/30"
+        <a 
+          href="mailto:craftcoo.lab@gmail.com"
+          className="bg-white rounded-2xl p-12 text-center shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group border border-[#E6A8A8]/30 block"
         >
           <div className="inline-flex items-center justify-center w-20 h-20 bg-[#E6A8A8]/30 rounded-full mb-6 group-hover:bg-[#E6A8A8]/50 transition-colors duration-300">
             <Mail className="w-10 h-10 text-[#D85C63]" />
@@ -34,7 +36,7 @@ export function ConnectSection() {
           <p className="text-gray-600 leading-relaxed">
             We'll respond to your inquiry within 24 hours
           </p>
-        </div>
+        </a>
       </div>
     </section>
   );

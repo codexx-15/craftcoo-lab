@@ -1,4 +1,4 @@
-import { Search, User, Heart, ShoppingCart, Menu, LogOut, X } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, Menu, LogOut, X, Home, Palette, Mail } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import API from '../api';
@@ -12,6 +12,7 @@ export function Header() {
   const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null;
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -49,9 +50,192 @@ export function Header() {
     setSearchResults([]);
   };
 
+  const closeMenu = () => setIsMenuOpen(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   return (
-    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-black/5 shadow-sm">
+    <header className="bg-white sticky top-0 z-40 border-b border-black/5 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 md:py-6">
+        {/* Mobile Menu Overlay - Guaranteed SOLID Background */}
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-[9999] md:hidden bg-white overflow-hidden h-screen w-screen">
+            {/* Menu Content - No transparency, no backdrop blur, just solid white */}
+            <div className="relative h-full w-full flex flex-col bg-white">
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-[10000]">
+                <h1 className="text-2xl font-black text-[#D85C63]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  craftco.lab
+                </h1>
+                <button 
+                  onClick={closeMenu} 
+                  className="p-3 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-all active:scale-90"
+                >
+                  <X className="w-6 h-6 text-gray-800" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 pb-32 bg-white">
+                <nav className="flex flex-col gap-2">
+                  <Link 
+                    to="/" 
+                    onClick={closeMenu}
+                    className="flex items-center justify-between p-5 rounded-3xl bg-gray-50 hover:bg-[#D85C63]/10 transition-all group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#D85C63]">
+                        <Home size={22} />
+                      </div>
+                      <span className="text-lg font-bold text-gray-800 group-hover:text-[#D85C63]">Home</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                      <Search size={14} className="rotate-90 text-gray-400" />
+                    </div>
+                  </Link>
+
+                  <Link 
+                    to="/category/paintings" 
+                    onClick={closeMenu}
+                    className="flex items-center justify-between p-5 rounded-3xl bg-gray-50 hover:bg-[#D85C63]/10 transition-all group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#D85C63]">
+                        <Palette size={22} />
+                      </div>
+                      <span className="text-lg font-bold text-gray-800 group-hover:text-[#D85C63]">All Categories</span>
+                    </div>
+                  </Link>
+
+                  <Link 
+                    to="/custom-paintings" 
+                    onClick={closeMenu}
+                    className="flex items-center justify-between p-5 rounded-3xl bg-[#D85C63] text-white shadow-[0_10px_20px_rgba(216,92,99,0.3)] hover:scale-[1.02] transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center">
+                        <Palette size={22} className="text-white" />
+                      </div>
+                      <span className="text-lg font-bold">Build Custom Painting</span>
+                    </div>
+                  </Link>
+
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <Link 
+                      to="/orders" 
+                      onClick={closeMenu}
+                      className="flex flex-col gap-3 p-5 rounded-3xl bg-gray-50 hover:bg-[#D85C63]/10 transition-all group"
+                    >
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#D85C63]">
+                        <ShoppingCart size={22} />
+                      </div>
+                      <span className="font-bold text-gray-800 group-hover:text-[#D85C63]">My Orders</span>
+                    </Link>
+                    <Link 
+                      to="/orders" 
+                      onClick={closeMenu}
+                      className="flex flex-col gap-3 p-5 rounded-3xl bg-gray-50 hover:bg-[#D85C63]/10 transition-all group"
+                    >
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#D85C63]">
+                        <Search size={22} />
+                      </div>
+                      <span className="font-bold text-gray-800 group-hover:text-[#D85C63]">Track Order</span>
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link 
+                      to="/wishlist" 
+                      onClick={closeMenu}
+                      className="flex flex-col gap-3 p-5 rounded-3xl bg-gray-50 hover:bg-[#D85C63]/10 transition-all group relative"
+                    >
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#D85C63]">
+                        <Heart size={22} />
+                      </div>
+                      <span className="font-bold text-gray-800 group-hover:text-[#D85C63]">Wishlist</span>
+                      {wishlist.length > 0 && (
+                        <span className="absolute top-4 right-4 bg-[#D85C63] text-white text-[10px] font-bold px-2 py-1 rounded-lg">
+                          {wishlist.length}
+                        </span>
+                      )}
+                    </Link>
+                    <Link 
+                      to="/cart" 
+                      onClick={closeMenu}
+                      className="flex flex-col gap-3 p-5 rounded-3xl bg-gray-50 hover:bg-[#D85C63]/10 transition-all group relative"
+                    >
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#D85C63]">
+                        <ShoppingCart size={22} />
+                      </div>
+                      <span className="font-bold text-gray-800 group-hover:text-[#D85C63]">My Cart</span>
+                      {cartCount > 0 && (
+                        <span className="absolute top-4 right-4 bg-[#D85C63] text-white text-[10px] font-bold px-2 py-1 rounded-lg">
+                          {cartCount}
+                        </span>
+                      )}
+                    </Link>
+                  </div>
+
+                  {userInfo?.isAdmin && (
+                    <Link 
+                      to="/admin" 
+                      onClick={closeMenu}
+                      className="flex items-center gap-4 p-5 rounded-3xl bg-gray-900 text-white hover:bg-black transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
+                        <Menu size={22} />
+                      </div>
+                      <span className="text-lg font-bold">Admin Panel</span>
+                    </Link>
+                  )}
+
+                  <div className="mt-4 p-6 bg-white rounded-[32px] border border-gray-100 shadow-sm">
+                    {userInfo ? (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-2xl bg-[#D85C63]/10 flex items-center justify-center text-[#D85C63] font-black text-xl">
+                            {userInfo.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-800 line-clamp-1">{userInfo.name}</p>
+                            <button 
+                              onClick={() => { handleLogout(); closeMenu(); }}
+                              className="text-xs font-bold text-red-500 hover:underline"
+                            >
+                              Logout
+                            </button>
+                          </div>
+                        </div>
+                        <a 
+                          href="mailto:craftcoo.lab@gmail.com"
+                          className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-[#D85C63] hover:bg-[#D85C63]/10 transition-all"
+                        >
+                          <Mail size={18} />
+                        </a>
+                      </div>
+                    ) : (
+                      <Link 
+                        to="/login" 
+                        onClick={closeMenu}
+                        className="flex items-center justify-center gap-3 w-full p-4 bg-gray-50 text-gray-800 font-bold rounded-2xl hover:bg-gray-100 transition-all"
+                      >
+                        <User size={18} className="text-[#D85C63]" /> Login to Account
+                      </Link>
+                    )}
+                  </div>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Search Overlay - Mobile & Desktop */}
         {isSearchOpen && (
           <div className="absolute inset-0 bg-white z-50 flex items-center px-6">
@@ -107,32 +291,36 @@ export function Header() {
         )}
 
         {/* Logo - Responsive sizes */}
-        <div className="flex items-center justify-between md:justify-center mb-4 md:mb-8">
-          <button className="md:hidden hover:text-[#D85C63] transition-colors" aria-label="Menu">
+        <div className="flex items-center justify-between md:justify-center mb-2 md:mb-8">
+          <button 
+            onClick={() => setIsMenuOpen(true)}
+            className="md:hidden hover:text-[#D85C63] transition-colors p-2 -ml-2" 
+            aria-label="Menu"
+          >
             <Menu className="w-6 h-6" />
           </button>
           
-          <Link to="/">
+          <Link to="/" className="flex-1 md:flex-none text-center">
             <h1 
-              className="text-2xl md:text-4xl tracking-wide"
+              className="text-xl sm:text-2xl md:text-4xl tracking-wide font-bold"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               craftco.lab
             </h1>
           </Link>
 
-          <div className="flex md:hidden items-center gap-3">
+          <div className="flex md:hidden items-center gap-1 sm:gap-3">
             <button 
               onClick={() => setIsSearchOpen(true)}
-              className="hover:text-[#D85C63] transition-colors" 
+              className="hover:text-[#D85C63] transition-colors p-2" 
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
             </button>
-            <Link to="/cart" className="hover:text-[#D85C63] transition-colors relative" aria-label="Cart">
+            <Link to="/cart" className="hover:text-[#D85C63] transition-colors relative p-2" aria-label="Cart">
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#D85C63] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-in zoom-in duration-300">
+                <span className="absolute top-1 right-1 bg-[#D85C63] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-in zoom-in duration-300">
                   {cartCount}
                 </span>
               )}

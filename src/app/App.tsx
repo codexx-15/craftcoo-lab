@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import { Header } from "./components/Header";
 import { AnnouncementBar } from "./components/AnnouncementBar";
 import { Footer } from "./components/Footer";
+import ChatBot from "./components/ChatBot";
 
 // Pages
 import Home from "./pages/Home";
@@ -17,6 +18,8 @@ import OrdersPage from "./pages/OrdersPage";
 import AdminPage from "./pages/AdminPage";
 import WishlistPage from "./pages/WishlistPage";
 import CustomPaintingPage from "./pages/CustomPaintingPage";
+import StorePage from "./pages/StorePage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
@@ -57,15 +60,18 @@ function App() {
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/custom-paintings" element={<CustomPaintingPage />} />
             <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+            <Route path="/store" element={<StorePage />} />
             <Route path="/admin" element={<ProtectedRoute isAdmin={true}><AdminPage /></ProtectedRoute>} />
           </Routes>
 
           <Footer />
+          <ChatBot />
         </div>
       </div>
         </CartProvider>

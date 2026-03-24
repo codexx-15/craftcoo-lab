@@ -20,10 +20,16 @@ const RegisterPage = () => {
             setError(null);
             const { data } = await API.post('/auth/register', { name, email, password });
             console.log('Registration success:', data);
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('userInfo', JSON.stringify(data));
-            navigate('/');
-            window.location.reload(); // To update header state
+            
+            if (data.isVerified === false) {
+                // Redirect to verification page
+                navigate('/verify-email', { state: { email } });
+            } else {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userInfo', JSON.stringify(data));
+                navigate('/');
+                window.location.reload();
+            }
         } catch (err: any) {
             console.error('Registration error details:', err.response || err);
             setError(err.response?.data?.message || 'Registration failed. Check console for details.');

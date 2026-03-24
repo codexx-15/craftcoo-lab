@@ -22,10 +22,14 @@ const LoginPage = () => {
             localStorage.setItem('token', data.token);
             localStorage.setItem('userInfo', JSON.stringify(data));
             navigate('/');
-            window.location.reload(); // To update header state
+            window.location.reload();
         } catch (err: any) {
             console.error('Login error details:', err.response || err);
-            setError(err.response?.data?.message || 'Login failed');
+            if (err.response?.data?.isVerified === false) {
+                navigate('/verify-email', { state: { email: err.response.data.email } });
+            } else {
+                setError(err.response?.data?.message || 'Login failed');
+            }
         } finally {
             setLoading(false);
         }
